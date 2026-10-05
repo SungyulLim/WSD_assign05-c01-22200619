@@ -18,8 +18,12 @@
 | `name` | `String` | 이름 | `홍길동` |
 | `role` | `String` | 동아리에서 맡은 역할 | `회원` |
 | `gender` | `String` | 성별 | `남성` |
+| `studentId` | `String` | 학번 | `22200619` |
+| `department` | `String` | 학과 | `컴퓨터공학과` |
 
-- 이름, 역할, 성별은 반드시 입력해야 함.
+- 이름, 역할, 성별, 학번, 학과의 5개 필드는 반드시 입력해야 함.
+- 학번도 문자열이므로 JSON에서 `"22200619"`처럼 큰따옴표로 감싸서 입력.
+- 학번과 학과는 누락·null·빈 문자열·공백 여부를 검사하며, 학번의 중복이나 자릿수는 검사하지 않음.
 - 역할과 성별은 특정 단어로 제한하지 않고, 비어 있는지만 검사.
 - 데이터는 프로그램의 메모리에 저장. 서버를 종료하면 회원 정보는 사라짐.
 
@@ -93,7 +97,9 @@ Postman에서 `POST`와 `http://localhost:8080/api/clubs`를 선택하고,
 {
   "name": "홍길동",
   "role": "회원",
-  "gender": "남성"
+  "gender": "남성",
+  "studentId": "22200619",
+  "department": "컴퓨터공학과"
 }
 ```
 
@@ -104,7 +110,9 @@ Postman에서 `POST`와 `http://localhost:8080/api/clubs`를 선택하고,
   "id": 1,
   "name": "홍길동",
   "role": "회원",
-  "gender": "남성"
+  "gender": "남성",
+  "studentId": "22200619",
+  "department": "컴퓨터공학과"
 }
 ```
 
@@ -116,7 +124,9 @@ Postman에서 `POST`와 `http://localhost:8080/api/clubs`를 선택하고,
     "id": 1,
     "name": "홍길동",
     "role": "회원",
-    "gender": "남성"
+    "gender": "남성",
+    "studentId": "22200619",
+    "department": "컴퓨터공학과"
   }
 ]
 ```
@@ -133,7 +143,9 @@ Postman에서 `POST`와 `http://localhost:8080/api/clubs`를 선택하고,
 {
   "name": "김유리",
   "role": "회장",
-  "gender": "여성"
+  "gender": "여성",
+  "studentId": "22200620",
+  "department": "경영학과"
 }
 ```
 
@@ -144,7 +156,9 @@ Postman에서 `POST`와 `http://localhost:8080/api/clubs`를 선택하고,
   "id": 1,
   "name": "김유리",
   "role": "회장",
-  "gender": "여성"
+  "gender": "여성",
+  "studentId": "22200620",
+  "department": "경영학과"
 }
 ```
 
@@ -202,7 +216,7 @@ Service는 `Book`을 만들어 `MemoryBookRepository.save()`로 저장.
 ### Q3. Request, 저장 객체, Response를 나누는 이유는?
 
 `BookRequest`는 받은 정보, `Book`은 저장할 정보, `BookResponse`는 보낼 정보를 담는다.
-이번 프로젝트의 `ClubRequest`에는 이름·역할·성별만 있고,
+이번 프로젝트의 `ClubRequest`에는 이름·역할·성별·학번·학과가 있고,
 `Club`과 `ClubResponse`에는 서버가 만든 회원 번호도 있음.
 각 객체가 맡은 역할을 구분하기 위해 나눔.
 
@@ -231,10 +245,10 @@ Service는 `Book`을 만들어 `MemoryBookRepository.save()`로 저장.
 | 단계 | 만든 내용 또는 변경한 내용 | 관련 클래스·메서드 | 확인 방법 |
 |---|---|---|---|
 | 1. 원본 확인과 실행 설정 | 책 관리 예제의 파일 역할을 확인하고 Spring Boot·Gradle·Java 설정을 맞춤 | `build.gradle`, Wrapper 설정, `MyClubApiApplication.main()` | 빌드와 기존 `contextLoads()` 테스트 통과 |
-| 2. 회원 정보와 DTO 작성 | 제목·저자·가격을 이름·역할·성별로 바꿈. 성별은 문자열로 변경 | `Club` 생성자·getter/setter, `ClubRequest`, `ClubResponse` | 컴파일 확인, 등록 응답에 회원 필드가 나오는지 확인 |
+| 2. 회원 정보와 DTO 작성 | 제목·저자·가격을 이름·역할·성별로 바꾸고, 학번·학과를 추가하여 id 외 5개 필드로 구성 | `Club` 생성자·getter/setter, `ClubRequest`, `ClubResponse` | 컴파일 확인, 등록 응답에 회원 필드가 나오는지 확인 |
 | 3. 기본 CRUD 작성 | 원본과 같은 방식으로 등록·조회·수정·삭제 구현 | `ClubController`, `ClubService`, `ClubRepository`, `MemoryClubRepository`의 CRUD 메서드 | 실제 HTTP 요청으로 등록부터 삭제 후 404까지 확인 |
 | 4. 추가 기능 작성 | 빈 값 검사와 회원 수 조회 추가 | `ClubService.validate()`, `create()`, `update()`, `count()`, `ClubController.count()` | 잘못된 입력의 400, 실패한 수정 후 정보 유지, 회원 수 변화 확인 |
-| 5. 최종 확인과 문서 작성 | 실행 JAR 생성, 테스트 결과와 사용 방법 정리 | `MyClubApiApplicationTests.contextLoads()`, `README.md` | 기존 테스트와 curl 요청 45건 통과 기록 확인 |
+| 5. 최종 확인과 문서 작성 | 실행 JAR 생성, 테스트 결과와 사용 방법 정리 | `MyClubApiApplicationTests.contextLoads()`, `README.md` | 기존 테스트와 5개 필드를 사용한 curl 요청 61건 통과 기록 확인 |
 
 ### 원본에서 바뀐 부분
 
@@ -244,6 +258,7 @@ Service는 `Book`을 만들어 `MemoryBookRepository.save()`로 저장.
 | `String title` | `String name` |
 | `String author` | `String role` |
 | `int price` | `String gender` |
+| 추가 필드 없음 | `String studentId`, `String department` 추가 |
 | `/api/books` | `/api/clubs` |
 | `com.webservice.week04` | `org.example.db.my_clubapi` |
 | `Week04BookCrudApplication` | `MyClubApiApplication` |
@@ -259,19 +274,19 @@ getter/setter, `LinkedHashMap`, `Optional`, Stream, 예외 처리 방식은 유�
 **추가한 이유:** 이름이나 역할 등이 비어 있는 회원 정보가 저장되는 것을 막기 위함.
 
 **수정한 코드:** `ClubService.validate()`를 만들고 `create()`와 `update()`에서 호출.
-`name`, `role`, `gender`가 누락되거나 `null`, `""`, 공백만 있는 문자열이면
+`name`, `role`, `gender`, `studentId`, `department`가 누락되거나 `null`, `""`, 공백만 있는 문자열이면
 원본에서 사용한 `ResponseStatusException`에 `HttpStatus.BAD_REQUEST`를 넣어 400을 반환.
 
 
-아래 표는 앞서 AI가 curl로 확인한 로컬 테스트 기록입니다. 이번 Postman 테스트의 실제 화면은 아래 **실제 응답 결과 — Postman 캡처**에 첨부합니다.
+아래 표는 5개 필드를 반영한 뒤 AI가 curl로 확인한 로컬 테스트 기록입니다. 전체 61개 요청이 통과했고, 그중 잘못된 입력 검사 요청은 40개입니다. 이번 Postman 테스트의 실제 화면은 아래 **실제 응답 결과 — Postman 캡처**에 첨부합니다.
 
 | 테스트 요청 | 요청 내용 | 예상 결과 | 기존 로컬 테스트 결과 |
 |---|---|---|---|
-| `POST /api/clubs` | `{"name":"홍길동","role":"회원","gender":"남성"}` | 201, 회원 등록 | 201, 번호 1과 입력한 회원 정보 반환 |
-| `PUT /api/clubs/1` | `{"name":"이서연","role":"회장","gender":"여성"}` | 200, 정보 수정 | 200, 번호 1 유지 및 세 필드 변경 |
-| `POST /api/clubs` | `{"name":"   ","role":"회원","gender":"남성"}` | 400, 등록 안 됨 | 400, 회원 수 유지 |
-| `PUT /api/clubs/1` | `{"name":"홍길동","role":"","gender":"남성"}` | 400, 수정 안 됨 | 400, 기존 회원 정보 유지 |
-| 등록·수정 요청 | 각 필드를 누락·null·빈 문자열·공백으로 바꿔서 요청 | 모두 400 | 3개 필드 × 4가지 경우 × 등록·수정 = 24건 모두 400 |
+| `POST /api/clubs` | `{"name":"홍길동","role":"회원","gender":"남성","studentId":"00123456","department":"컴퓨터공학과"}` | 201, 회원 등록 | 201, 번호 1과 입력한 회원 정보 반환 |
+| `PUT /api/clubs/1` | `{"name":"이서연","role":"회장","gender":"여성","studentId":"00345678","department":"전자공학과"}` | 200, 정보 수정 | 200, 번호 1 유지 및 다섯 필드 변경 |
+| `POST /api/clubs` | `{"name":"   ","role":"회원","gender":"남성","studentId":"00123456","department":"컴퓨터공학과"}` | 400, 등록 안 됨 | 400, 회원 수 유지 |
+| `PUT /api/clubs/1` | `{"name":"홍길동","role":"","gender":"남성","studentId":"00123456","department":"컴퓨터공학과"}` | 400, 수정 안 됨 | 400, 기존 회원 정보 유지 |
+| 등록·수정 요청 | 각 필드를 누락·null·빈 문자열·공백으로 바꿔서 요청 | 모두 400 | 5개 필드 × 4가지 경우 × 등록·수정 = 40건 모두 400 |
 
 ### B. 현재 저장된 회원 수 조회
 
@@ -293,45 +308,13 @@ Service에서 기존 `repository.findAll()`로 목록을 가져오고 `size()`�
 | 남은 회원 삭제 후 | 0명 | 200 | `0` |
 
 ### 실제 응답 결과 — Postman 캡처
-
-아래 13단계를 순서대로 실행하고, 각 단계의 실제 응답 화면을 캡처해 첨부합니다.
-예상 결과는 확인 기준이며, 실제 결과는 각 항목 아래에 넣는 캡처로 기록합니다.
-
-#### 캡처 넣는 방법
-
-1. Postman에서 아래의 요청 방식과 주소를 입력합니다. POST·PUT은 `Body → raw → JSON`, GET·DELETE는 `Body → none`을 선택합니다.
-2. `Send`를 누른 뒤 요청 방식·주소·요청 JSON·응답 상태·응답 본문이 보이도록 캡처합니다.
-3. 캡처를 아래 표의 파일명으로 바꾸고, 이 README와 같은 폴더에 있는 `images` 폴더에 저장합니다.
-4. 이미지 연결 코드는 이미 작성되어 있으므로 파일만 넣으면 README 미리보기와 GitHub에 표시됩니다. README와 이미지 파일을 함께 Commit·Push합니다.
-
-> 파일명과 `.png` 확장자를 표와 똑같이 맞춰 주세요. 이미지를 넣기 전에는 이미지가 표시되지 않습니다.
-> 아래 URL의 `/1`은 예시입니다. 2단계 등록 응답에서 받은 실제 `id`로 바꿔 요청하세요.
-> 수정 예시는 이 README의 요청 예시와 동일한 `김유리`를 사용합니다.
-> 테스트 중 추가 등록이나 서버 재시작이 없다는 기준으로 회원 수를 비교합니다. 재시작으로 데이터가 사라지면 1단계부터 다시 진행합니다.
-
-| 단계 | 캡처할 내용 | images 폴더에 저장할 파일명 |
-|---|---|---|
-| 01 | 등록 전 회원 수 확인 | `01-count-before.png` |
-| 02 | 정상 회원 등록 | `02-post-success.png` |
-| 03 | 전체 회원 조회 | `03-get-members.png` |
-| 04 | 회원 한 명 조회 | `04-get-member.png` |
-| 05 | 정상 회원 수정 | `05-put-success.png` |
-| 06 | 수정 결과 다시 조회 | `06-get-after-update.png` |
-| 07 | 잘못된 등록 요청 | `07-post-invalid.png` |
-| 08 | 잘못된 수정 요청 | `08-put-invalid.png` |
-| 09 | 잘못된 수정 후 기존 정보 확인 | `09-get-after-invalid-update.png` |
-| 10 | 등록 후 회원 수 확인 | `10-count-after-create.png` |
-| 11 | 회원 삭제 | `11-delete-success.png` |
-| 12 | 삭제한 회원 조회 | `12-get-deleted-member.png` |
-| 13 | 삭제 후 회원 수 확인 | `13-count-after-delete.png` |
-
 #### 01. 등록 전 회원 수 확인
 
 **요청 방식:** `GET`
 
 **요청 주소:**
 
-```text
+```text 
 https://wsd-assign05-c01-22200619.onrender.com/api/clubs/count
 ```
 
@@ -355,13 +338,29 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs
 
 ```json
 {
-  "name": "홍길동",
+  "id": 1,
+  "name": "임성열",
   "role": "회원",
-  "gender": "남성"
+  "gender": "남성",
+  "studentId": "22200619",
+  "department": "AI컴퓨터전자공학부"
 }
 ```
 
-**예상 결과:** 201 Created. 회원 번호와 입력한 정보가 반환. 응답의 id를 다음 단계부터 사용.
+**예상 결과:** 201 Created. 자동 생성된 `id`와 `임성열 / 회원 / 남성 / 22200619 / 컴퓨터공학과`가 반환됩니다. 응답의 id를 다음 단계부터 사용합니다.
+
+`id`가 1인 경우 예상 응답:
+
+```json
+{
+  "id": 1,
+  "name": "홍길동",
+  "role": "회원",
+  "gender": "남성",
+  "studentId": "22200619",
+  "department": "컴퓨터공학과"
+}
+```
 
 ![02. 정상 회원 등록 실제 응답](images/02-post-success.png)
 
@@ -377,7 +376,7 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs
 
 **Body:** `none` (입력하지 않음)
 
-**예상 결과:** 200 OK. 목록에 방금 등록한 홍길동이 포함됨.
+**예상 결과:** 200 OK. 목록 `[...]` 안에 방금 등록한 임성열의 id와 5개 필드가 포함
 
 ![03. 전체 회원 조회 실제 응답](images/03-get-members.png)
 
@@ -393,7 +392,7 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/1
 
 **Body:** `none`
 
-**예상 결과:** 200 OK. 2단계에서 등록한 회원의 정보가 반환됨.
+**예상 결과:** 200 OK. 02단계 응답과 같은 회원 정보가 객체 `{...}` 하나로 반환
 
 ![04. 회원 한 명 조회 실제 응답](images/04-get-member.png)
 
@@ -413,11 +412,26 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/1
 {
   "name": "김유리",
   "role": "회장",
-  "gender": "여성"
+  "gender": "여성",
+  "studentId": "22200620",
+  "department": "경영학과"
 }
 ```
 
-**예상 결과:** 200 OK. 회원 번호는 그대로이고 이름·역할·성별이 김유리 / 회장 / 여성으로 변경됨.
+**예상 결과:** 200 OK. `id`는 그대로이고 5개 필드가 `김유리 / 회장 / 여성 / 22200620 / 경영학과`로 변경됩니다.
+
+`id`가 1인 경우 예상 응답:
+
+```json
+{
+  "id": 1,
+  "name": "김유리",
+  "role": "회장",
+  "gender": "여성",
+  "studentId": "22200620",
+  "department": "경영학과"
+}
+```
 
 ![05. 정상 회원 수정 실제 응답](images/05-put-success.png)
 
@@ -433,7 +447,7 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/1
 
 **Body:** `none` (입력하지 않음)
 
-**예상 결과:** 200 OK. 김유리 / 회장 / 여성으로 수정된 정보가 유지됨.
+**예상 결과:** 200 OK. 05단계와 같은 `김유리 / 회장 / 여성 / 22200620 / 경영학과` 정보가 반환
 
 ![06. 수정 결과 다시 조회 실제 응답](images/06-get-after-update.png)
 
@@ -453,11 +467,13 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs
 {
   "name": "",
   "role": "회원",
-  "gender": "남성"
+  "gender": "남성",
+  "studentId": "22200619",
+  "department": "컴퓨터공학과"
 }
 ```
 
-**예상 결과:** 400 Bad Request. 이름이 빈 문자열이므로 회원이 등록되지 않음.
+**예상 결과:** 400 Bad Request. 학번·학과 등 나머지는 정상 값이고, `name`만 `""`이므로 등록되지 않음
 
 ![07. 잘못된 등록 요청 실제 응답](images/07-post-invalid.png)
 
@@ -477,12 +493,13 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/1
 {
   "name": "김민수",
   "role": "",
-  "gender": "남성"
+  "gender": "남성",
+  "studentId": "22200619",
+  "department": "컴퓨터공학과"
 }
 ```
 
-**예상 결과:** 400 Bad Request. 역할이 빈 문자열이므로 회원 정보가 수정되지 않음.
-
+**예상 결과:** 400 Bad Request. 학번·학과 등 나머지는 정상 값이고, `role`만 `""`이므로 수정되지 않음
 ![08. 잘못된 수정 요청 실제 응답](images/08-put-invalid.png)
 
 #### 09. 잘못된 수정 후 기존 정보 확인
@@ -497,7 +514,7 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/1
 
 **Body:** `none` (입력하지 않음)
 
-**예상 결과:** 200 OK. 김민수로 바뀌지 않고 김유리 / 회장 / 여성 정보가 유지.
+**예상 결과:** 200 OK. 08단계의 김민수 정보가 저장되지 않고 `김유리 / 회장 / 여성 / 22200620 / 경영학과`가 그대로 반환됩니다. 학번·학과도 05단계 값이 유지되어야 합니다.
 
 ![09. 잘못된 수정 후 기존 정보 확인 실제 응답](images/09-get-after-invalid-update.png)
 
@@ -513,7 +530,7 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/count
 
 **Body:** `none` (입력하지 않음)
 
-**예상 결과:** 200 OK. 1단계보다 1명 증가한 숫자가 반환됨. 실패한 등록 요청은 회원 수를 늘리지 않음.
+**예상 결과:** 200 OK. 01단계가 `0`이었다면 본문은 숫자 `1`입니다. 처음에 회원이 있었다면 처음보다 1명 증가합니다. 07단계의 실패한 등록은 회원 수를 늘리지 않습니다.
 
 ![10. 등록 후 회원 수 확인 실제 응답](images/10-count-after-create.png)
 
@@ -545,7 +562,7 @@ https://wsd-assign05-c01-22200619.onrender.com/api/clubs/1
 
 **Body:** `none` (입력하지 않음)
 
-**예상 결과:** 404 Not Found.
+**예상 결과:** 404 Not Found. 방금 삭제한 id를 조회했으므로 응답의 `status`는 `404`이고 `path`는 요청한 `/api/clubs/회원번호`입니다.
 
 ![12. 삭제한 회원 조회 실제 응답](images/12-get-deleted-member.png)
 
@@ -622,7 +639,7 @@ Render가 실행 중인 서버의 8080 포트를 감지한 뒤 연결 설정을 
 ### 4. 배포 URL로 확인한 요청과 응답
 
 `https://wsd-assign05-c01-22200619.onrender.com`.
-결과는 `images` 폴더에 저장한 실제 Postman 캡처를 기준으로 정리.
+아래 표는 기존 Postman 캡처에서 확인한 결과입니다. 현재 5개 필드 기준의 입력값과 예상 결과는 5절의 01~13단계에 정리했습니다. 재테스트한 캡처로 교체한 뒤 이 표의 id·회원 정보·회원 수를 실제 응답에 맞춰 갱신합니다.
 
 | 확인한 내용 | 요청 | 실제 응답 | 캡처 |
 |---|---|---|---|
@@ -632,8 +649,8 @@ Render가 실행 중인 서버의 8080 포트를 감지한 뒤 연결 설정을 
 | 회원 한 명 조회 | `GET /api/clubs/1` | 200 OK, 번호 1의 회원 정보 | [04](images/04-get-member.png) |
 | 회원 수정 | `PUT /api/clubs/1` | 200 OK, 김유리 / 회장 / 여성으로 변경 | [05](images/05-put-success.png) |
 | 수정 결과 재조회 | `GET /api/clubs/1` | 200 OK, 김유리 / 회장 / 여성 정보 확인 | [09](images/09-get-after-invalid-update.png) |
-| 잘못된 등록 주소 | `POST /api/clubs%0A` | 404 Not Found. 빈 이름 검사는 재확인 필요 | [07](images/07-post-invalid.png) |
-| 잘못된 수정 주소 | `PUT /api/clubs/1%0A` | 400 Bad Request. 빈 역할 검사는 재확인 필요 | [08](images/08-put-invalid.png) |
+| 빈 이름으로 등록 | `POST /api/clubs` | 400 Bad Request, 이름이 비어 있어 등록 거부 | [07](images/07-post-invalid.png) |
+| 빈 역할로 수정 | `PUT /api/clubs/1` | 400 Bad Request, 역할이 비어 있어 수정 거부 | [08](images/08-put-invalid.png) |
 | 등록 후 회원 수 | `GET /api/clubs/count` | 200 OK, `1` | [10](images/10-count-after-create.png) |
 | 회원 삭제 | `DELETE /api/clubs/1` | 204 No Content, 응답 본문 없음 | [11](images/11-delete-success.png) |
 | 삭제한 회원 조회 | `GET /api/clubs/1` | 404 Not Found | [12](images/12-get-deleted-member.png) |
@@ -645,7 +662,7 @@ Render가 실행 중인 서버의 8080 포트를 감지한 뒤 연결 설정을 
 ### Key Learning: 이번 코드에서 정리한 내용 3가지
 
 1. **파일마다 역할이 다름.** Controller는 요청을 받고, Service는 처리 순서를 정하고, Repository는 데이터를 저장.
-2. **요청 데이터/응답 데이터.** 등록 요청에는 이름·역할·성별을 보내지만, 응답에는 자동으로 만든 회원 번호도 들어감.
+2. **요청 데이터/응답 데이터.** 등록 요청에는 이름·역할·성별·학번·학과를 보내지만, 응답에는 자동으로 만든 회원 번호도 들어감.
 3. **수정하기 전에 검사.** `update()`에서 먼저 `validate()`를 호출해야 잘못된 입력이 기존 회원 정보를 바꾸는 일을 막을 수 있음.
 
 ### Problem & Solution: 자료형 변경 후 컴파일 오류
@@ -668,13 +685,15 @@ public ClubResponse update(Long id, ClubRequest r) {
     b.setName(r.name());
     b.setRole(r.role());
     b.setGender(r.gender());
+    b.setStudentId(r.studentId());
+    b.setDepartment(r.department());
     return toResponse(repository.update(b));
 }
 ```
 
 1. `validate(r)`에서 입력을 검사. 잘못된 입력이면 400을 반환하고 처리를 멈춤.
 2. `findClub(id)`로 수정할 회원을 찾음. 회원이 없으면 404를 반환.
-3. 회원을 찾으면 setter로 이름, 역할, 성별을 바꿈.
+3. 회원을 찾으면 setter로 이름, 역할, 성별, 학번, 학과를 바꿈.
 4. `repository.update(b)`로 저장소에 반영.
 5. `toResponse()`로 응답용 객체를 만들어 반환.
 
@@ -694,10 +713,16 @@ private void validate(ClubRequest r) {
     if (r.gender() == null || r.gender().isBlank()) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gender is required");
     }
+    if (r.studentId() == null || r.studentId().isBlank()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student ID is required");
+    }
+    if (r.department() == null || r.department().isBlank()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Department is required");
+    }
 }
 ```
 
-`ClubService`에서 사용하는 입력 검사 코드. 이름·역할·성별이 `null`이거나 빈 문자열 또는 공백뿐이면
+`ClubService`에서 사용하는 입력 검사 코드. 이름·역할·성별·학번·학과가 `null`이거나 빈 문자열 또는 공백뿐이면
 `ResponseStatusException`을 발생시켜 `400 Bad Request`를 반환함.
 등록·수정 전에 `validate()`를 호출하여 잘못된 정보가 저장되지 않도록 처리함.
 
