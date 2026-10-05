@@ -5,10 +5,13 @@ public class Club {
     private String name;
     private String role;
     private String gender;
+    private String studentId;
+    private String department;
 
     public Club() {}
-    public Club(Long id, String name, String role, String gender) {
+    public Club(Long id, String name, String role, String gender, String studentId, String department) {
         this.id=id; this.name=name; this.role=role; this.gender=gender;
+        this.studentId=studentId; this.department=department;
     }
     public Long getId(){
         return id;
@@ -33,5 +36,17 @@ public class Club {
     }
     public void setGender(String gender){
         this.gender=gender;
+    }
+    public String getStudentId(){
+        return studentId;
+    }
+    public void setStudentId(String studentId){
+        this.studentId=studentId;
+    }
+    public String getDepartment(){
+        return department;
+    }
+    public void setDepartment(String department){
+        this.department=department;
     }
 }
